@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+
+
+var app = require('../app');
+var debug = require('debug')('peliculasiud:server');
+var http = require('http');
+
+
+var port = normalizePort(process.env.PORT || '5117');
+app.set('port', port);
+
+var server = http.createServer(app);
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    return val;
+  }
+
+  if (port >= 0) {
+    return port;
+  }
+
+  return false;
+}
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+//------------------------------------------------------------------
+
+
+//const { MongoClient } = require('mongodb');
+
+
+const url = 'mongodb://localhost:27017';
+//const client = new MongoClient(url);
+
+const dbName = 'peliculasiud';
+
+/*async function main() {
+
+  await client.connect();
+  console.log('Connected successfully to server');
+  const db = client.db(dbName);
+  return 'done.';
+}
+
+main()
+    .then(console.log)
+    .catch(console.error)
+    .finally(() => client.close());
+*/
+
+
+
+//---------------------------------
+const { MongoClient } = require("mongodb");
+const mongoose = require('mongoose');
+// Replace the uri string with your MongoDB deployment's connection string.
+
+const client = new MongoClient(url);
+async function run() {
+  try {
+    await //client.connect();
+    mongoose.connect('mongodb://127.0.0.1:27017/peliculasiud');
+    console.log('Connected successfully to server');
+    const db = client.db(dbName);
+    return 'done.';
+    // database and collection code goes here
+    // insert code goes here
+    // display the results of your operation
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
